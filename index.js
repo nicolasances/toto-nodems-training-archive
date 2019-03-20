@@ -1,28 +1,25 @@
-var express = require('express');
-var Promise = require('promise');
-var bodyParser = require("body-parser");
-var logger = require('toto-apimon-events');
+var Controller = require('toto-api-controller');
+
+var getMuscles = require('./dlg/GetMuscles');
+
+var getMuscleExercises = require('./dlg/GetMuscleExercises');
+var postMuscleExercises = require('./dlg/PostMuscleExercise');
+var putMuscleExercises = require('./dlg/PutMuscleExercise');
+var deleteMuscleExercises = require('./dlg/DeleteMuscleExercise');
 
 var apiName = 'training-archive';
 
-var app = express();
+var api = new Controller(apiName);
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Methods", "OPTIONS, GET, PUT, POST, DELETE");
-  next();
-});
-app.use(bodyParser.json());
+api.path('GET', '/muscles', getMuscles);
 
-/***************
- * APIS
- ***************/
-app.get('/', function(req, res) {res.send({api: apiName, status: 'running'});});
+api.path('GET', '/muscles/:mid/exercises', getMuscleExercises);
+api.path('POST', '/muscles/:mid/exercises', postMuscleExercises);
+
+api.path('PUT', '/muscles/:mid/exercises/:eid', putMuscleExercises);
+api.path('DELETE', '/muscles/:mid/exercises/:eid', deleteMuscleExercises);
 
 /***********
  * START
  **********/
-app.listen(8080, function() {
-  console.log('Training Archive Microservice up and running');
-});
+api.listen();
